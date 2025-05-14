@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - Security Lab{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card border-skyblue mb-4">
+            <div class="card-header bg-navy text-white">
+                <h4 class="card-title mb-0">
+                    <i class="fas fa-crown"></i> Congratulations! Challenge Completed
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-success">
+                    <h5 class="alert-heading">Success! <i class="fas fa-check-circle"></i></h5>
+                    <p class="mb-0">You have successfully exploited the Broken Access Control vulnerability and gained administrative access!</p>
+                </div>
+
+                <div class="card bg-navy text-light mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-flag"></i> Your CTF Flag</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="input-group">
+                            <input type="text" class="form-control form-control-lg" value="{{ flag }}" readonly>
+                            <button class="btn btn-outline-light" onclick="copyFlag()">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <h5><i class="fas fa-book"></i> What You Learned</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-skyblue text-white">
+                                <h6 class="mb-0">The Vulnerability</h6>
+                            </div>
+                            <div class="card-body">
+                                <p>This is an example of <strong>Broken Access Control</strong>, specifically:</p>
+                                <ul>
+                                    <li>The backend API did not properly validate which user attributes could be modified</li>
+                                    <li>The sensitive <code>role</code> field was exposed and modifiable through the API</li>
+                                    <li>No proper access control checks were implemented for sensitive field modification</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-skyblue-light text-navy">
+                                <h6 class="mb-0">How to Fix It</h6>
+                            </div>
+                            <div class="card-body">
+                                <p>Proper implementation should include:</p>
+                                <ul>
+                                    <li>Implementing a whitelist of allowed fields to update</li>
+                                    <li>Proper role-based access control for sensitive operations</li>
+                                    <li>Validating all user input on the server side</li>
+                                    <li>Following the principle of least privilege</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header bg-navy text-white">
+                        <h6 class="mb-0">Vulnerable Code</h6>
+                    </div>
+                    <div class="card-body">
+                        <pre class="bg-light p-3 rounded"><code>@app.route("/api/user/<int:uid>", methods=["PUT"])
+def update_user(uid):
+    if g.user is None or g.user.id != uid:
+        abort(403)
+
+    data = request.get_json(force=True)
+    
+    # VULNERABLE CODE:
+    for k, v in data.items():          
+        setattr(g.user, k, v)        
+    
+    db.session.commit()
+    session["role"] = g.user.role
+    return jsonify(msg="Profile updated successfully")</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-skyblue text-white">
+                <h5 class="mb-0"><i class="fas fa-shield-alt"></i> Next Steps</h5>
+            </div>
+            <div class="card-body">
+                <p>To learn more about Broken Access Control vulnerabilities, check out these resources:</p>
+                <ul>
+                    <li><a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/" target="_blank">OWASP Top 10: Broken Access Control</a></li>
+                    <li><a href="https://owasp.org/API-Security/editions/2023/en/0xa1-broken-object-level-authorization/" target="_blank">OWASP API Security: Broken Object Level Authorization</a></li>
+                    <li><a href="https://portswigger.net/web-security/access-control" target="_blank">PortSwigger Academy: Access Control Vulnerabilities</a></li>
+                </ul>
+                <p>Try the other challenges in this CTF series to test more of your skills!</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function copyFlag() {
+    const flagInput = document.querySelector('input[value="{{ flag }}"]');
+    flagInput.select();
+    document.execCommand('copy');
+    
+    // Show a temporary success message
+    const button = document.querySelector('.btn-outline-light');
+    const originalHTML = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    button.classList.remove('btn-outline-light');
+    button.classList.add('btn-success');
+    
+    setTimeout(() => {
+        button.innerHTML = originalHTML;
+        button.classList.remove('btn-success');
+        button.classList.add('btn-outline-light');
+    }, 2000);
+}
+</script>
+{% endblock %}
