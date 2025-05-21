@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile Card{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="mb-3">
+                <a href="{{ url_for('profile') }}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Edit Profile
+                </a>
+            </div>
+            
+            {# VULNERABLE: Renders unsanitized template string with user input #}
+            {{ card | safe }}
+            
+            <div class="mt-4">
+                <div class="alert alert-info">
+                    <h5>Your Profile Card URL</h5>
+                    <p>Share this link with others to show your profile card:</p>
+                    <div class="input-group">
+                        <input type="text" class="form-control" value="{{ request.url }}" readonly>
+                        <button class="btn btn-outline-primary copy-btn" type="button" onclick="copyToClipboard()">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyToClipboard() {
+    var copyText = document.querySelector(".input-group input");
+    copyText.select();
+    document.execCommand("copy");
+    alert("Copied to clipboard!");
+}
+</script>
+{% endblock %} 

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Blog - VNPT Security Lab{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-4">Blog</h1>
+            <p class="lead">Chia sẻ kiến thức và cập nhật tin tức về an ninh mạng</p>
+            <hr>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for post in posts %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <img src="{{ url_for('static', filename=post.image_path) }}" class="card-img-top" alt="{{ post.title }}" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-primary">{{ post.category }}</span>
+                        <small class="text-muted">{{ post.created_at.strftime('%d/%m/%Y') }}</small>
+                    </div>
+                    <h5 class="card-title">{{ post.title }}</h5>
+                    <p class="card-text">{{ post.summary[:150] }}{% if post.summary|length > 150 %}...{% endif %}</p>
+                </div>
+                <div class="card-footer bg-white border-top-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <a href="{{ url_for('blog_detail', post_id=post.id) }}" class="btn btn-sm btn-outline-primary">Đọc thêm</a>
+                        </div>
+                        <small class="text-muted">Tác giả: {{ post.author.username }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if g.user and g.user.role == 'admin' %}
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <a href="{{ url_for('blog_new') }}" class="btn btn-success">
+                <i class="fas fa-plus-circle"></i> Tạo bài viết mới
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 
