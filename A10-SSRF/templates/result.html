@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Ready - File Downloader Tool</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <header>
+        <h1>File Downloader Tool</h1>
+    </header>
+    <main>
+        <h2>Download is Ready</h2>
+        <div class="success-box">
+            <p>Your file has been successfully fetched and is ready for download.</p>
+        </div>
+        <a href="/download/{{ file_name }}" class="download-link">Download {{ file_name }}</a>
+        <p><a href="/downloader" class="back-link">Download another file</a></p>
+    </main>
+    <footer>
+        <p>© 2025 Security Lab. All rights reserved.</p>
+        <p><a href="/">Home</a> | <a href="/blog">Blog</a> | <a href="/profile">Profile</a></p>
+    </footer>
+</body>
+</html> 

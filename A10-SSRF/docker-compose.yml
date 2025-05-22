@@ -1,0 +1,18 @@
+version: '3.9'
+
+services:
+  ssrf-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001" # Expose the main application port
+    restart: unless-stopped
+    volumes:
+      - .:/app # Mount current directory to /app in the container
+    networks:
+      - ssrf-network
+
+networks:
+  ssrf-network:
+    driver: bridge 
