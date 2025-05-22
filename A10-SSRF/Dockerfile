@@ -22,7 +22,7 @@ RUN python -c "from app import init_db; init_db()"
 
 # Expose ports for main app and internal service
 EXPOSE 5001
-EXPOSE 8001
+EXPOSE 745
 
 # Run the application using the start script
 CMD ["./start.sh"]
