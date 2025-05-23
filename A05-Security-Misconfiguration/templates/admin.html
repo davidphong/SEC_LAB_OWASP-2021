@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - Security Lab{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card border-skyblue mb-4">
+            <div class="card-header bg-navy text-white">
+                <h4 class="card-title mb-0">
+                    <i class="fas fa-crown"></i> Congratulations! Challenge Completed
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-success">
+                    <h5 class="alert-heading">Success! <i class="fas fa-check-circle"></i></h5>
+                    <p class="mb-0">You have successfully exploited the Path Traversal vulnerability and accessed sensitive files!</p>
+                </div>
+
+                <div class="card bg-navy text-light mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-flag"></i> Your CTF Flag</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="input-group">
+                            <input type="text" class="form-control form-control-lg" value="{{ flag }}" readonly>
+                            <button class="btn btn-outline-light" onclick="copyFlag()">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <h5><i class="fas fa-book"></i> What You Learned</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-skyblue text-white">
+                                <h6 class="mb-0">The Vulnerability</h6>
+                            </div>
+                            <div class="card-body">
+                                <p>This is an example of <strong>Path Traversal</strong> vulnerability, specifically:</p>
+                                <ul>
+                                    <li>The image loading endpoint did not validate or sanitize user input</li>
+                                    <li>The code allowed traversing outside the intended directory using "../" sequences</li>
+                                    <li>No proper path canonicalization or validation was implemented</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-skyblue-light text-navy">
+                                <h6 class="mb-0">How to Fix It</h6>
+                            </div>
+                            <div class="card-body">
+                                <p>Proper implementation should include:</p>
+                                <ul>
+                                    <li>Validating and sanitizing user input for path traversal sequences</li>
+                                    <li>Canonicalizing file paths before use</li>
+                                    <li>Restricting access to files within the intended directory</li>
+                                    <li>Using whitelisting approach for allowed files/directories</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header bg-navy text-white">
+                        <h6 class="mb-0">Vulnerable Code</h6>
+                    </div>
+                    <div class="card-body">
+                        <pre class="bg-light p-3 rounded"><code>@app.route("/images/<path:image_path>")
+def get_image(image_path):
+    try:
+        # Vulnerable code: No validation of image_path
+        # Does not check for path traversal sequences
+        image_fullpath = os.path.join(app.config['IMAGE_FOLDER'], image_path)
+        return send_file(image_fullpath)
+    except Exception as e:
+        abort(404)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-skyblue text-white">
+                <h5 class="mb-0"><i class="fas fa-shield-alt"></i> Next Steps</h5>
+            </div>
+            <div class="card-body">
+                <p>To learn more about Path Traversal vulnerabilities, check out these resources:</p>
+                <ul>
+                    <li><a href="https://owasp.org/www-community/attacks/Path_Traversal" target="_blank">OWASP: Path Traversal</a></li>
+                    <li><a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/" target="_blank">OWASP Top 10: Security Misconfiguration</a></li>
+                    <li><a href="https://portswigger.net/web-security/file-path-traversal" target="_blank">PortSwigger Academy: Directory Traversal</a></li>
+                </ul>
+                <p>Try the other challenges in this CTF series to test more of your skills!</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function copyFlag() {
+    const flagInput = document.querySelector('input[value="{{ flag }}"]');
+    flagInput.select();
+    document.execCommand('copy');
+    
+    // Show a temporary success message
+    const button = document.querySelector('.btn-outline-light');
+    const originalHTML = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    button.classList.remove('btn-outline-light');
+    button.classList.add('btn-success');
+    
+    setTimeout(() => {
+        button.innerHTML = originalHTML;
+        button.classList.remove('btn-success');
+        button.classList.add('btn-outline-light');
+    }, 2000);
+}
+</script>
+{% endblock %}
