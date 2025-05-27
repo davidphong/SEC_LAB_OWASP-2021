@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+
+{% block title %}Giỏ hàng - VNPT Sec Lab{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Giỏ hàng của bạn</h2>
+    
+    {% if cart_items %}
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Sản phẩm đã chọn</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th class="text-center">Đơn giá</th>
+                            <th class="text-center">Số lượng</th>
+                            <th class="text-center">Thành tiền</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                        <tr data-product-id="{{ item.product.id }}" data-quantity="{{ item.quantity }}">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="{{ url_for('static', filename=item.product.image) }}" alt="{{ item.product.name }}" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                                    <div class="ms-3">
+                                        <h6 class="mb-0">{{ item.product.name }}</h6>
+                                        <small class="text-muted">{{ item.product.description|truncate(50) }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center align-middle">{{ "{:,.0f}".format(item.product.price) }} VNĐ</td>
+                            <td class="text-center align-middle">
+                                <div class="quantity-control d-flex justify-content-center align-items-center">
+                                    <button class="btn btn-sm btn-outline-secondary decrease-qty" data-id="{{ item.product.id }}">-</button>
+                                    <span class="mx-2">{{ item.quantity }}</span>
+                                    <button class="btn btn-sm btn-outline-secondary increase-qty" data-id="{{ item.product.id }}">+</button>
+                                </div>
+                            </td>
+                            <td class="text-center align-middle">{{ "{:,.0f}".format(item.total) }} VNĐ</td>
+                            <td class="text-center align-middle">
+                                <button class="btn btn-sm btn-danger remove-item" data-id="{{ item.product.id }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5>Tổng tiền:</h5>
+                <h5 class="text-primary" id="total-price" data-total="{{ total }}">{{ "{:,.0f}".format(total) }} VNĐ</h5>
+            </div>
+        </div>
+    </div>
+    
+    <div class="d-flex justify-content-between">
+        <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Tiếp tục mua sắm
+        </a>
+        <a href="{{ url_for('checkout.checkout_page') }}" class="btn btn-primary">
+            <i class="fas fa-shopping-cart me-1"></i> Thanh toán
+        </a>
+    </div>
+    {% else %}
+    <div class="card shadow-sm">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-shopping-cart fa-4x text-muted mb-3"></i>
+            <h4>Giỏ hàng của bạn đang trống</h4>
+            <p class="text-muted mb-4">Bạn chưa có sản phẩm nào trong giỏ hàng.</p>
+            <a href="{{ url_for('main.index') }}" class="btn btn-primary">Tiếp tục mua sắm</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Xử lý nút tăng số lượng
+    const increaseButtons = document.querySelectorAll('.increase-qty');
+    increaseButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.getAttribute('data-id');
+            
+            // Gọi API để thêm vào giỏ hàng
+            fetch('/api/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: parseInt(productId),
+                    qty: 1
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Reload để cập nhật giỏ hàng
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Có lỗi xảy ra khi cập nhật giỏ hàng', 'danger');
+            });
+        });
+    });
+    
+    // Xử lý nút giảm số lượng
+    const decreaseButtons = document.querySelectorAll('.decrease-qty');
+    decreaseButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.getAttribute('data-id');
+            const quantityElement = this.nextElementSibling;
+            const currentQty = parseInt(quantityElement.textContent);
+            
+            if (currentQty > 1) {
+                // Gọi API để thêm vào giỏ hàng (số lượng âm sẽ giảm)
+                fetch('/api/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: parseInt(productId),
+                        qty: -1
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Reload để cập nhật giỏ hàng
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Có lỗi xảy ra khi cập nhật giỏ hàng', 'danger');
+                });
+            } else {
+                // Nếu số lượng là 1, xóa sản phẩm
+                removeProduct(productId);
+            }
+        });
+    });
+    
+    // Xử lý nút xóa sản phẩm
+    const removeButtons = document.querySelectorAll('.remove-item');
+    removeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.getAttribute('data-id');
+            removeProduct(productId);
+        });
+    });
+    
+    // Hàm xóa sản phẩm
+    function removeProduct(productId) {
+        fetch('/api/cart/remove', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id: parseInt(productId)
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Reload để cập nhật giỏ hàng
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Có lỗi xảy ra khi xóa sản phẩm', 'danger');
+        });
+    }
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} - VNPT Sec Lab{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav aria-label="breadcrumb" class="mt-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">Trang chủ</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+        </ol>
+    </nav>
+    
+    <div class="row mt-3">
+        <div class="col-md-5">
+            <div class="card border-0 shadow-sm">
+                <img src="{{ url_for('static', filename=product.image) }}" class="card-img-top" alt="{{ product.name }}">
+            </div>
+        </div>
+        <div class="col-md-7">
+            <h2 class="mb-3">{{ product.name }}</h2>
+            <p class="text-muted">{{ product.description }}</p>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="text-primary mb-0">{{ "{:,.0f}".format(product.price) }} VNĐ</h5>
+                        <span class="badge bg-success">Còn hàng</span>
+                    </div>
+                    
+                    <div class="d-flex align-items-center mb-3">
+                        <label class="me-3">Số lượng:</label>
+                        <div class="input-group" style="width: 130px;">
+                            <button class="btn btn-outline-secondary" type="button" id="decreaseQty">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="number" class="form-control text-center" id="quantity" value="1" min="1">
+                            <button class="btn btn-outline-secondary" type="button" id="increaseQty">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button class="btn btn-primary" id="addToCartBtn" data-product-id="{{ product.id }}">
+                            <i class="fas fa-cart-plus me-2"></i> Thêm vào giỏ hàng
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const quantityInput = document.getElementById('quantity');
+    const increaseBtn = document.getElementById('increaseQty');
+    const decreaseBtn = document.getElementById('decreaseQty');
+    const addToCartBtn = document.getElementById('addToCartBtn');
+    
+    // Xử lý nút tăng số lượng
+    increaseBtn.addEventListener('click', function() {
+        quantityInput.value = parseInt(quantityInput.value) + 1;
+    });
+    
+    // Xử lý nút giảm số lượng
+    decreaseBtn.addEventListener('click', function() {
+        const currentValue = parseInt(quantityInput.value);
+        if (currentValue > 1) {
+            quantityInput.value = currentValue - 1;
+        }
+    });
+    
+    // Xử lý nút thêm vào giỏ hàng
+    addToCartBtn.addEventListener('click', function() {
+        const quantity = parseInt(quantityInput.value);
+        const productId = parseInt(this.dataset.productId);
+        
+        fetch('/api/cart/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id: productId,
+                qty: quantity
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            showToast(data.message, 'success');
+            
+            // Cập nhật số lượng giỏ hàng trong navbar
+            const cartBadge = document.querySelector('.fa-shopping-cart + .badge');
+            if (cartBadge) {
+                cartBadge.textContent = data.cart_count;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Có lỗi xảy ra khi thêm vào giỏ hàng', 'danger');
+        });
+    });
+});
+</script>
+{% endblock %} 

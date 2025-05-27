@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Placeholder Image</title>
+    <style>
+        body { margin: 0; padding: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <canvas id="placeholderCanvas" width="300" height="200"></canvas>
+    <script>
+        const canvas = document.getElementById('placeholderCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Background
+        ctx.fillStyle = '#f0f0f0';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Border
+        ctx.strokeStyle = '#dddddd';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(0, 0, canvas.width, canvas.height);
+        
+        // Text
+        ctx.fillStyle = '#888888';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('VNPT Security', canvas.width / 2, canvas.height / 2);
+        
+        // Output the image
+        const dataUrl = canvas.toDataURL('image/png');
+        const img = document.createElement('img');
+        img.src = dataUrl;
+        document.body.appendChild(img);
+        canvas.style.display = 'none';
+    </script>
+</body>
+</html> 

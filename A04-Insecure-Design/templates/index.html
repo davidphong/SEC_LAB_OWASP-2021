@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}VNPT Sec Lab - Trang chủ{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-light border-0">
+                <div class="card-body text-center py-5">
+                    <h1 class="display-5 fw-bold text-navy">VNPT Sec Lab</h1>
+                    <p class="lead">Demo cho OWASP Top 10 - A04 Insecure Design</p>
+                    <p class="mb-4">Mua sắm sản phẩm với mức giá tốt nhất!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="mb-4">Sản phẩm của chúng tôi</h2>
+    
+    <div class="row">
+        {% for product in products %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <img src="{{ url_for('static', filename=product.image) }}" class="card-img-top" alt="{{ product.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text text-muted">{{ product.description }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-primary fw-bold">{{ "{:,.0f}".format(product.price) }} VNĐ</span>
+                        <button class="btn btn-outline-primary add-to-cart" data-id="{{ product.id }}" data-name="{{ product.name }}">
+                            <i class="fas fa-cart-plus"></i> Thêm vào giỏ
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Xử lý nút thêm vào giỏ hàng
+    const addToCartButtons = document.querySelectorAll('.add-to-cart');
+    
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.dataset.id;
+            const productName = this.dataset.name;
+            
+            // Gọi API để thêm vào giỏ hàng
+            fetch('/api/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: parseInt(productId),
+                    qty: 1
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Hiển thị thông báo
+                showToast(data.message, 'success');
+                
+                // Cập nhật số lượng giỏ hàng trong navbar
+                const cartBadge = document.querySelector('.fa-shopping-cart + .badge');
+                if (cartBadge) {
+                    cartBadge.textContent = data.cart_count;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Có lỗi xảy ra khi thêm vào giỏ hàng', 'danger');
+            });
+        });
+    });
+});
+</script>
+{% endblock %}
