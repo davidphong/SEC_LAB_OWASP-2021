@@ -1,9 +1,0 @@
-# Database Backup - CONFIDENTIAL
-# Date: 2025-05-27 15:26:12
-
-# User accounts (username, email, md5_password)
-
-admin,admin@lab,e6e061838856bf47e1de730719fb2609
-guest,guest@lab,297c6fbd70faac3072bde49b87f2c777
-
-# End of backup

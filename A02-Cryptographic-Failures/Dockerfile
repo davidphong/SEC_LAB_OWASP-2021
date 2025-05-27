@@ -17,7 +17,7 @@ ENV PYTHONUNBUFFERED=1
 ENV PORT=5000
 
 # Initialize database
-RUN python -c "from app import init_db; init_db()"
+# RUN python -c "from app import init_db; init_db()"
 
 # Expose port
 EXPOSE 5000
