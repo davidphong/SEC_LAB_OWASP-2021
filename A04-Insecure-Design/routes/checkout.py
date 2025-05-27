@@ -75,7 +75,11 @@ def checkout():
     
     # Check for special offer (FLAG)
     flag = ""
-    if order.total < 1000:  # If price < 1,000 VND, provide flag
+    a = False
+    for _ in order.items:
+        if _.quantity > 10:
+            a = True
+    if order.total < 1000 and a:  # If price < 1,000 VND, provide flag
         # Try to read flag from file
         try:
             flag_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'flag.txt')
