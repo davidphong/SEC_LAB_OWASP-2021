@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Security Lab{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header bg-navy text-white">
+                <h4 class="card-title mb-0">Profile Settings</h4>
+            </div>
+            <div class="card-body">
+                <form id="profile-form">
+                    <h5 class="mb-3 text-navy">Account Information</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" value="{{ g.user.username }}" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" value="{{ g.user.email }}">
+                        </div>
+                    </div>
+
+                    <h5 class="mb-3 mt-4 text-navy">Personal Information</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" name="full_name" value="{{ g.user.full_name or '' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" name="phone_number" value="{{ g.user.phone_number or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Bio</label>
+                        <textarea class="form-control" name="bio" rows="3">{{ g.user.bio or '' }}</textarea>
+                        <div class="form-text">Tell us a little about yourself</div>
+                    </div>
+
+                    <h5 class="mb-3 mt-4 text-navy">Address</h5>
+                    <div class="mb-3">
+                        <label class="form-label">Street Address</label>
+                        <input type="text" class="form-control" name="address" value="{{ g.user.address or '' }}">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">City</label>
+                            <input type="text" class="form-control" name="city" value="{{ g.user.city or '' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Country</label>
+                            <input type="text" class="form-control" name="country" value="{{ g.user.country or '' }}">
+                        </div>
+                    </div>
+
+                    <h5 class="mb-3 mt-4 text-navy">Professional Information</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Company</label>
+                            <input type="text" class="form-control" name="company" value="{{ g.user.company or '' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Job Title</label>
+                            <input type="text" class="form-control" name="job_title" value="{{ g.user.job_title or '' }}">
+                        </div>
+                    </div>
+
+                    <h5 class="mb-3 mt-4 text-navy">Online Presence</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Website</label>
+                            <input type="url" class="form-control" name="website" value="{{ g.user.website or '' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Social Media</label>
+                            <input type="text" class="form-control" name="social_media" value="{{ g.user.social_media or '' }}">
+                            <div class="form-text">Your social media handle</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 d-none">
+                        <label class="form-label">Current Role</label>
+                        <input type="text" class="form-control" value="{{ g.user.role }}" readonly>
+                    </div>
+                    
+                    <div class="text-end mt-4">
+                        <button type="submit" class="btn btn-skyblue px-4">Update Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('profile-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    // Get all form values
+    const formData = {
+        email: e.target.email.value,
+        full_name: e.target.full_name.value,
+        phone_number: e.target.phone_number.value,
+        bio: e.target.bio.value,
+        address: e.target.address.value,
+        city: e.target.city.value,
+        country: e.target.country.value,
+        company: e.target.company.value,
+        job_title: e.target.job_title.value,
+        website: e.target.website.value,
+        social_media: e.target.social_media.value
+    };
+    
+    try {
+        const response = await fetch(`/api/user/{{ g.user.id }}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        if (response.ok) {
+            alert('Profile updated successfully!');
+            location.reload();
+        } else {
+            const data = await response.json();
+            alert(`Failed to update profile: ${data.error || 'Unknown error'}`);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while updating your profile');
+    }
+});
+</script>
+{% endblock %}

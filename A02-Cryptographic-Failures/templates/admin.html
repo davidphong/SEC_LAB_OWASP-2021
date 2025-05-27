@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - Security Lab{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card border-skyblue mb-4">
+            <div class="card-header bg-navy text-white">
+                <h4 class="card-title mb-0">
+                    <i class="fas fa-crown"></i> Congratulations! Challenge Completed
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-success">
+                    <h5 class="alert-heading">Success! <i class="fas fa-check-circle"></i></h5>
+                    <p class="mb-0">You have successfully exploited the Cryptographic Failures vulnerability and gained administrative access!</p>
+                </div>
+
+                <div class="card bg-navy text-light mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-flag"></i> Your CTF Flag</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="input-group">
+                            <input type="text" class="form-control form-control-lg" value="{{ flag }}" readonly>
+                            <button class="btn btn-outline-light" onclick="copyFlag()">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <h5><i class="fas fa-book"></i> What You Learned</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-skyblue text-white">
+                                <h6 class="mb-0">The Vulnerabilities</h6>
+                            </div>
+                            <div class="card-body">
+                                <p>This is an example of <strong>Cryptographic Failures</strong>, specifically:</p>
+                                <ul>
+                                    <li>Using weak hashing algorithm (MD5) for password storage</li>
+                                    <li>Storing sensitive backup files in publicly accessible locations</li>
+                                    <li>Including plaintext passwords or weak hashes in backup files</li>
+                                    <li>Lack of proper credential protection mechanisms</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-skyblue-light text-navy">
+                                <h6 class="mb-0">How to Fix It</h6>
+                            </div>
+                            <div class="card-body">
+                                <p>Proper implementation should include:</p>
+                                <ul>
+                                    <li>Using strong hashing algorithms (bcrypt, Argon2, PBKDF2) with proper salting</li>
+                                    <li>Storing backups securely in non-public locations</li>
+                                    <li>Encrypting sensitive data in backups</li>
+                                    <li>Never including credentials in comments or plain text</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+        <div class="card">
+            <div class="card-header bg-skyblue text-white">
+                <h5 class="mb-0"><i class="fas fa-shield-alt"></i> Next Steps</h5>
+            </div>
+            <div class="card-body">
+                <p>To learn more about Cryptographic Failures vulnerabilities, check out these resources:</p>
+                <ul>
+                    <li><a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/" target="_blank">OWASP Top 10: Cryptographic Failures</a></li>
+                    <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html" target="_blank">OWASP Password Storage Cheat Sheet</a></li>
+                    <li><a href="https://portswigger.net/web-security/crypto" target="_blank">PortSwigger Academy: Weak Cryptography</a></li>
+                </ul>
+                <p>Try the other challenges in this CTF series to test more of your skills!</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function copyFlag() {
+    const flagInput = document.querySelector('input[value="{{ flag }}"]');
+    flagInput.select();
+    document.execCommand('copy');
+    
+    // Show a temporary success message
+    const button = document.querySelector('.btn-outline-light');
+    const originalHTML = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    button.classList.remove('btn-outline-light');
+    button.classList.add('btn-success');
+    
+    setTimeout(() => {
+        button.innerHTML = originalHTML;
+        button.classList.remove('btn-success');
+        button.classList.add('btn-outline-light');
+    }, 2000);
+}
+</script>
+{% endblock %}
