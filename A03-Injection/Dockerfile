@@ -19,10 +19,12 @@ RUN adduser --disabled-password --gecos "" flaguser
 
 # Set permissions
 RUN chown -R appuser:appuser /app && \
-    chmod -R 0555 /app && \
-    chmod -R 0444 /app/*.py && \
-    chmod -R 0444 /app/templates && \
-    chmod -R 0444 /app/static && \
+    chmod -R 0755 /app && \
+    chmod 0644 /app/*.py && \
+    chmod -R 0755 /app/templates && \
+    chmod -R 0644 /app/templates/* && \
+    chmod -R 0755 /app/static && \
+    find /app/static -type f -exec chmod 0644 {} \; && \
     chown flaguser:flaguser flag.txt && \
     chmod 0444 flag.txt && \
     mkdir -p /app/instance && \
